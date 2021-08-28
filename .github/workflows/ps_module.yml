@@ -29,26 +29,29 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Update Version in PSD1
+    - name: Update PSD1 Version and ReleaseNotes 
       shell: powershell
       run: |
-        #pull the contents of the release notes so we can verify the release notes have been updated with the new release version and update the manifest with them
-        $releaseNotes = Get-Content "${{ github.workspace }}\${{ env.MY_REPO }}\RELEASE_NOTES" -raw
         #the manifest filename we will pull the contents from and make modifications to 
         $fileName = "${{ github.workspace }}\${{ env.MY_REPO }}\${{ env.MY_REPO }}.psd1"
         $inputsVersion = "${{ github.event.inputs.ModuleVersion }}"
-        if ($releaseNotes -notmatch ([Regex]::Escape($inputsVersion))) {
-            throw "You must add release notes for the version ($inputsVersion) being pushed. Add the release notes to here: https://github.com/${{github.repository}}/blob/main/${{ env.MY_REPO }}/RELEASE_NOTES"
-            exit 1
-        }
         $manifestContents =  Get-Content $fileName -raw
         $regexoptions = [System.Text.RegularExpressions.RegexOptions]::IgnoreCase -bor [System.Text.RegularExpressions.RegexOptions]::Multiline
+        #pull the contents of the release notes so we can verify the release notes have been updated with the new release version and update the manifest with them
+        if (Test-Path "${{ github.workspace }}\${{ env.MY_REPO }}\RELEASE_NOTES") {
+            # ignore this if we dont have release notes
+            $releaseNotes = Get-Content "${{ github.workspace }}\${{ env.MY_REPO }}\RELEASE_NOTES" -raw
+            if ($releaseNotes -notmatch ([Regex]::Escape($inputsVersion))) {
+                throw "You must add release notes for the version ($inputsVersion) being pushed. Add the release notes to here: https://github.com/${{github.repository}}/blob/main/${{ env.MY_REPO }}/RELEASE_NOTES"
+                exit 1
+            }
+            $manifestContents = [Regex]::Replace($manifestContents, '(^.*?ReleaseNotes\s*=\s*@'')[\w\W]*?(''@.*$)', "`${1}`r`n$releaseNotes`r`n`${2}", $regexoptions)
+        }
         #extract the existing version out of the psd1, into seperate parts
         $matches = [Regex]::Matches($manifestContents, '(ModuleVersion\s*=\s*'')(.*?)(''.*$)', $regexoptions)
         Write-Output "Changing version from $($matches.Groups[2].Value) to $inputsVersion for '$fileName'"
         #update the version the contents of the $manifestContents with the new version
         $manifestContents = [Regex]::Replace($manifestContents, '(ModuleVersion\s*=\s*'')(.*?)(''.*$)', "`${1}$inputsVersion`${3}", $regexoptions)
-        $manifestContents = [Regex]::Replace($manifestContents, '(^.*?ReleaseNotes\s*=\s*@'')[\w\W]*?(''@.*$)', "`${1}`r`n$releaseNotes`r`n`${2}", $regexoptions)
         Write-Output "Updated ManifestContents = $manifestContents"
         #write the updated? $manifestContents back out into the psd1 file
         [System.IO.File]::WriteAllText($fileName, $manifestContents)
