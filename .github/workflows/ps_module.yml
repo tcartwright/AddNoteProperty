@@ -15,7 +15,7 @@ jobs:
     steps:
     - name: SplitRepoNAme
       shell: powershell
-      run: echo "MY_REPO=$("${{ GITHUB_REPOSITORY }}" -split '/', 2 | Select-Object -Last 1)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      run: echo "MY_REPO=$("${{github.repository}}" -split '/', 2 | Select-Object -Last 1)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       
     - name: Validate Version Input
       shell: powershell
