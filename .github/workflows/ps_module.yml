@@ -38,7 +38,7 @@ jobs:
         $fileName = "${{ github.workspace }}\${{ env.MY_REPO }}\${{ env.MY_REPO }}.psd1"
         $inputsVersion = "${{ github.event.inputs.ModuleVersion }}"
         if ($releaseNotes -notmatch ([Regex]::Escape($inputsVersion))) {
-            throw "You must add release notes for the version ($inputsVersion) being pushed. Add the release notes to here: https://github.com/tcartwright/${{ env.MY_REPO }}/blob/main/${{ env.MY_REPO }}/RELEASE_NOTES"
+            throw "You must add release notes for the version ($inputsVersion) being pushed. Add the release notes to here: https://github.com/${{github.repository}}/blob/main/${{ env.MY_REPO }}/RELEASE_NOTES"
             exit 1
         }
         $manifestContents =  Get-Content $fileName -raw
