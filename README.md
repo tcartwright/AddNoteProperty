@@ -15,6 +15,26 @@ $obj = [PSCustomObject]@{ Testing = "foo"}
 Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "bar"
 ```
 
+Adding properties with special characters
+```powershell
+$obj = [PSCustomObject]@{}
+Add-NoteProperty -InputObject $obj -Properties "Build", "system.debug" -Value $true
+Add-NoteProperty -InputObject $obj -Properties "Build", "configuration" -Value "release"
+Add-NoteProperty -InputObject $obj -Properties "Build", "platform" -Value "any cpu"
+$obj | ConvertTo-JSON 
+```
+
+Outputs:
+```json
+{
+  "Build": {
+    "system.debug": true,
+    "configuration": "release",
+    "platform": "any cpu"
+  }
+}
+```
+
 Adds a complex structure onto an object
 ```powershell
 $obj = [PSCustomObject]@{ }
@@ -30,7 +50,7 @@ $obj | ConvertTo-JSON
 ```
 
 Outputs:
-```powershell
+```json
 {
   "Person": {
     "Name": {
