@@ -30,7 +30,7 @@ CompanyName = 'tcartwright'
 Copyright = '(c) 2021 tcartwright. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'This function will allow you to create very complex PSCustomObject's easily.'
+Description = 'This function will allow you to create very complex PSCustomObject''s easily.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
