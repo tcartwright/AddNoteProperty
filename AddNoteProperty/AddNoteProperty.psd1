@@ -12,7 +12,7 @@
 RootModule = 'AddNoteProperty.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0'
+ModuleVersion = '1.0.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -110,6 +110,8 @@ PrivateData = @{
         ReleaseNotes = @'
 1.0.0
 * Initial  release to PS Gallery
+1.0.1
+* changed haschanged compare to be case insensitive
 
 '@
 
