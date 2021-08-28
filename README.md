@@ -29,12 +29,46 @@ Add-NoteProperty -InputObject $obj -Properties "Person", "Address", "Zip" -Value
 $obj | ConvertTo-JSON 
 ```
 
+Outputs:
+```powershell
+{
+  "Person": {
+    "Name": {
+      "First": "Tim",
+      "Last": "Cartwright"
+    },
+    "Age": "Old",
+    "Phones": {
+      "Home": "281-867-5309",
+      "Mobile": "713-867-5309"
+    },
+    "Address": {
+      "City": "Houston",
+      "State": "Texas",
+      "Zip": "8675309"
+    }
+  }
+}
+```
+
 Keeps track of whether or not the function made any changes to the object. Useful to determine you are changing a pre-existing object, and need to know whether to save it or not.
 ```powershell
 [bool]$changed = $false
-$obj = [PSCustomObject]@{ }
+$obj = [PSCustomObject]@{ "Testing" = "foo" }
+
 Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "foo" -hasChanged ([ref]$changed) #test has changed
+"1. HasChanged: $changed"
+
 Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "bar" -hasChanged ([ref]$changed) #test property that pre-exist
+"2. HasChanged: $changed"
+
 Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "bar" -hasChanged ([ref]$changed) #test haschanged not flipping back on nil change
-$obj | ConvertTo-JSON 
+"3. HasChanged: $changed"
+```
+
+Outputs:
+```powershell
+1. HasChanged: False
+2. HasChanged: True
+3. HasChanged: True
 ```
