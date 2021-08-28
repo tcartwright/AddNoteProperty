@@ -75,15 +75,15 @@ Outputs:
 
 ### Credits 	
 
-    - Original idea came from [here][1]
-        - Rewrote to loop instead of recursion
-        - modified property string to property string array, allows w/e to be passed in as the property, no need to split / replace
-        - can handle adding very complex structures
-        - will add or replace last value property
-        - can pipeling in the original object, made the main parameters mandatory
-        - added haschanged so if changing an existing object you can determine if any changes have occured. once true, never resets to false        
-    - [Original author][2]
-	
+  - Original idea came from [here][1]
+  - [Original author][2]
+  - Modifications:
+    - Rewrote to loop instead of recursion
+    - modified property string to property string array, allows w/e to be passed in as the property, no need to split / replace
+    - can handle adding very complex structures
+    - will add or replace last value property
+    - can pipeling in the original object, made the main parameters mandatory
+    - added haschanged so if changing an existing object you can determine if any changes have occured. once true, never resets to false        
 	
 [1]: https://stackoverflow.com/a/57183818/1988507/
 [2]: https://stackoverflow.com/users/5650875/j-peter
