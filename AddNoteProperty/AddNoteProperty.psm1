@@ -80,7 +80,7 @@ function Add-NoteProperty {
             }
         } else {
             if ($hasChanged) {
-                $hasChanged.Value = $hasChanged.Value -bor ($obj."$propName" -ne $value)
+                $hasChanged.Value = $hasChanged.Value -bor ($obj."$propName" -ine $value)
             }
             $obj."$propName" = $value
         }
