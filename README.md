@@ -71,7 +71,7 @@ Outputs:
 }
 ```
 
-Keeps track of whether or not the function made any changes to the object. Useful to determine you are changing a pre-existing object, and need to know whether to save it or not.
+The [re] parameter hasChanged can be used to keep track of whether or not the function made any changes to the object. Useful to determine you are changing a pre-existing object, and need to know whether to save it or not.
 ```powershell
 [bool]$changed = $false
 $obj = [PSCustomObject]@{ "Testing" = "foo" }
