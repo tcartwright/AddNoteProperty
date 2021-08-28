@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest  
     
     steps:
-    - name: SplitRepoNAme
+    - name: SplitRepoName
       shell: powershell
       run: echo "MY_REPO=$("${{github.repository}}" -split '/', 2 | Select-Object -Last 1)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       
