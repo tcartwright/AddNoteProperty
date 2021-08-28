@@ -1,2 +1,4 @@
 1.0.0
 * Initial  release to PS Gallery
+1.0.1
+* changed haschanged compare to be case insensitive
