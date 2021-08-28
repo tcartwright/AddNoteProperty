@@ -76,13 +76,16 @@ The optional \[ref\]$hasChanged parametercan be used to keep track of whether or
 [bool]$changed = $false
 $obj = [PSCustomObject]@{ "Testing" = "foo" }
 
-Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "foo" -hasChanged ([ref]$changed) #test has changed
+#test has changed, with nil change
+Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "foo" -hasChanged ([ref]$changed) 
 "1. HasChanged: $changed"
 
-Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "bar" -hasChanged ([ref]$changed) #test property that pre-exist
+#test property that pre-exists
+Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "bar" -hasChanged ([ref]$changed) 
 "2. HasChanged: $changed"
 
-Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "bar" -hasChanged ([ref]$changed) #test haschanged not flipping back on nil change
+#test haschanged not flipping back on nil change
+Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "bar" -hasChanged ([ref]$changed) 
 "3. HasChanged: $changed"
 ```
 
