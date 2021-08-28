@@ -74,7 +74,7 @@ Outputs:
 The optional \[ref\]$hasChanged parametercan be used to keep track of whether or not the function made any changes to the object. Useful to determine you are changing a pre-existing object, and need to know whether to save it or not.
 ```powershell
 [bool]$changed = $false
-$obj = [PSCustomObject]@{ "Testing" = "foo" }
+$obj = [PSCustomObject]@{ Testing = "foo" }
 
 #test has changed, with nil change
 Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "foo" -hasChanged ([ref]$changed) 
