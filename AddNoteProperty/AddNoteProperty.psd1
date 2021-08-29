@@ -12,7 +12,7 @@
 RootModule = 'AddNoteProperty.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.2'
+ModuleVersion = '1.0.3'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -114,6 +114,8 @@ PrivateData = @{
 * changed haschanged compare to be case insensitive
 1.0.2
 * Added ability to add array objects
+1.0.3
+* Fixed a bug in the has changed code
 
 '@
 
