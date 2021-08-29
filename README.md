@@ -2,6 +2,15 @@
 
 This function will allow you to create very complex PSCustomObject's easily.
 
+## What it can and cannot do:
+
+  - It can 
+  	- Add or edit complex custom properties to objects
+  	- Add complex arrays with sub objects to those arrays
+  	- Add simple arrays of value types
+  - It can not:
+  	- Edit arrays. To edit an array item, pass the individual item into the -InputObject parameter	
+
 ### Examples: 
 
 Installs the latest version of the module from the Powershell Gallery
@@ -96,6 +105,72 @@ Outputs:
 3. HasChanged: True
 ```
 
+Working with complex objects and arrays
+```powershell
+$obj = [PSCustomObject]@{ }
+Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "foo" -ArrayProperty "Testing" -IsNew
+Add-NoteProperty -InputObject $obj -Properties "Testing" -Value "bar" -ArrayProperty "Testing"
+
+Add-NoteProperty -InputObject $obj -Properties "Person", "Name", "First" -Value "Tim"
+Add-NoteProperty -InputObject $obj -Properties "Person", "Name", "Last" -Value "Cartwright"
+Add-NoteProperty -InputObject $obj -Properties "Person", "Age" -Value "Older than an ant, younger than a mountain"
+
+# we are going to add an array of phones, each new phone must be marked off with -isnew
+$ArrayProperty = "Phones"
+Add-NoteProperty -InputObject $obj -Properties "Person", "Phones", "Number" -Value "281-867-5309" -ArrayProperty $ArrayProperty -IsNew
+Add-NoteProperty -InputObject $obj -Properties "Person", "Phones", "Type" -Value "Home" -ArrayProperty $ArrayProperty
+
+Add-NoteProperty -InputObject $obj -Properties "Person", "Phones", "Number" -Value "713-867-5309" -ArrayProperty $ArrayProperty -IsNew
+Add-NoteProperty -InputObject $obj -Properties "Person", "Phones", "Type" -Value "Mobile" -ArrayProperty $ArrayProperty
+
+Add-NoteProperty -InputObject $obj -Properties "Person", "Phones", "Number" -Value "555-867-5309" -ArrayProperty $ArrayProperty -IsNew
+Add-NoteProperty -InputObject $obj -Properties "Person", "Phones", "Type" -Value "Work" -ArrayProperty $ArrayProperty
+
+
+# we are going to add an array of addresses, each new address must be marked off with -isnew 
+$ArrayProperty = "Addresses"
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "Address 1" -Value "123 Foo Lane" -ArrayProperty $ArrayProperty -IsNew
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "Address 2" -Value "APT 987" -ArrayProperty $ArrayProperty 
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "City" -Value "Houston"  -ArrayProperty $ArrayProperty 
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "State" -Value "Texas" -ArrayProperty $ArrayProperty
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "Zip" -Value "8675309" -ArrayProperty $ArrayProperty
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "Type" -Value "home" -ArrayProperty $ArrayProperty
+
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "Address 1" -Value "555 Blueberry Hill" -ArrayProperty $ArrayProperty -IsNew
+#leave off this property
+#Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "Address 2" -Value "" -ArrayProperty $ArrayProperty 
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "City" -Value "Houston" -ArrayProperty $ArrayProperty 
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "State" -Value "Texas"  -ArrayProperty $ArrayProperty
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "Zip" -Value "77777" -ArrayProperty $ArrayProperty
+Add-NoteProperty -InputObject $obj -Properties "Person", "Addresses", "Type" -Value "work" -ArrayProperty $ArrayProperty
+
+Clear-Host
+$obj | ConvertTo-JSON 
+```
+
+Outputs:
+```json
+{
+  "Testing": ["foo", "bar"],
+  "Person": {
+    "Name": {
+      "First": "Tim",
+      "Last": "Cartwright"
+    },
+    "Age": "Older than an ant, younger than a mountain",
+    "Phones": [
+      "@{Number=281-867-5309; Type=Home}",
+      "@{Number=713-867-5309; Type=Mobile}",
+      "@{Number=555-867-5309; Type=Work}"
+    ],
+    "Addresses": [
+      "@{Address 1=123 Foo Lane; Address 2=APT 987; City=Houston; State=Texas; Zip=8675309; Type=home}",
+      "@{Address 1=555 Blueberry Hill; City=Houston; State=Texas; Zip=77777; Type=work}"
+    ]
+  }
+}
+```
+
 ### Credits 	
 
   - Original idea came from [here][1]
@@ -106,7 +181,8 @@ Outputs:
     - can handle adding very complex structures
     - will add or replace last value property
     - can pipeling in the original object, made the main parameters mandatory
-    - added haschanged so if changing an existing object you can determine if any changes have occured. once true, never resets to false        
+    - added haschanged so if changing an existing object you can determine if any changes have occured. once true, never resets to false
+    - added ability add arrays    
 	
 [1]: https://stackoverflow.com/a/57183818/1988507/
 [2]: https://stackoverflow.com/users/5650875/j-peter
