@@ -76,7 +76,7 @@ function Add-NoteProperty {
     process {
         $obj = $InputObject
         # loop all but the very last property
-        $propNames = New-Object System.Collections.ArrayList 
+        $propNames = New-Object System.Collections.ArrayList
         foreach ($p in ($Properties | Select-Object -SkipLast 1)) {
             $propNames.Add($p) | Out-Null
         }
