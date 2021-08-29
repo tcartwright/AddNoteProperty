@@ -2,3 +2,5 @@
 * Initial  release to PS Gallery
 1.0.1
 * changed haschanged compare to be case insensitive
+1.0.2
+* Added ability to add array objects
