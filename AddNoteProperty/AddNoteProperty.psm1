@@ -150,7 +150,7 @@ function Add-NoteProperty {
     }
     end {
         if ($hasChanged -and !$hasChanged.Value) {
-            $hasChanged.Value = [bool]($InputObjectClone -ine $InputObject | ConvertTo-Json -Compress)
+            $hasChanged.Value = [bool]($InputObjectClone -ine ($InputObject | ConvertTo-Json -Compress))
         }
     }
 }
