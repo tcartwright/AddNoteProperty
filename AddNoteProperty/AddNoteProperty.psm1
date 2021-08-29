@@ -11,6 +11,12 @@
 .PARAMETER Value
 	The object value to add for the value property of the very last element in Properties.
 
+.PARAMETER ArrayProperty
+	The name of the property in the chain that is an array. The first element in the item for the array must be marked with -IsNew. Note: Arrays can only be ADDED to. If you wish to edit an item in an array then pass in the individual item into the -InputObject.
+
+.PARAMETER IsNew
+	Switch that signifies this is the start of an an array object. Has not impact if ArrayProperty is not set
+
 .PARAMETER hasChanged
 	OPTIONAL: If the object is changed in any way the value will be flipped to true. Will not flip back to false inside the function. Can be reset to false outside of the function.
 
@@ -57,32 +63,94 @@ function Add-NoteProperty {
         [string[]]$Properties,
         [Parameter(Mandatory=$true)]
         [object]$Value,
+        [string]$ArrayProperty,
+        [switch]$IsNew,
         [ref]$hasChanged
     )
+    begin {
+        #only test for changes if they passed in haschanged, and its false. once true, ignore.
+        if ($hasChanged -and !$hasChanged.Value) {
+            $InputObjectClone = $InputObject | ConvertTo-Json -Compress
+        }
+    }
     process {
         $obj = $InputObject
         # loop all but the very last property
-        foreach ($propName in ($Properties | Select-Object -SkipLast 1)) {
-            if (!($obj | Get-Member -MemberType NoteProperty -Name $propName)) {
-                $obj | Add-Member NoteProperty -Name $propName -Value (New-Object PSCustomObject)
-                if ($hasChanged) {
-                    $hasChanged.Value = $true
+        $propNames = New-Object System.Collections.ArrayList 
+        foreach ($p in ($Properties | Select-Object -SkipLast 1)) {
+            $propNames.Add($p) | Out-Null
+        }
+
+        for($x = 0; $x -lt $propNames.Count; $x++) {
+            $propName = $propNames[$x]
+            $isArray = [bool]($ArrayProperty -and $ArrayProperty -ieq $propName)
+            $ParentIsArray = $false
+            if ($x -gt 0) {
+                $ParentIsArray = [bool]($ArrayProperty -and $ArrayProperty -ieq $propNames[($x - 1)])
+            }
+
+            if ($ParentIsArray) {
+                if ($IsNew.IsPresent) {
+                    $tmpObj = (New-Object PSCustomObject)
+                } else {
+                    $tmpObj = $obj | Select-Object -Last 1
+                }
+                if (!($tmpObj | Get-Member -MemberType NoteProperty -Name $propName)) {
+                    $tmpObj | Add-Member NoteProperty -Name $propName -Value (New-Object PSCustomObject)
+                }
+                $obj.Add($tmpObj) | Out-Null
+                $obj = $tmpObj
+            } else {
+                if (!($obj | Get-Member -MemberType NoteProperty -Name $propName)) {
+                    if ($isArray) {
+                        $obj | Add-Member NoteProperty -Name $propName -Value (New-Object System.Collections.ArrayList)
+                        $obj = $obj.$propName
+                    } else {
+                        $obj | Add-Member NoteProperty -Name $propName -Value (New-Object PSCustomObject)
+                        $obj = $obj.$propName
+                    }
+                } else {
+                    $obj = $obj.$propName
                 }
             }
-            $obj = $obj.$propName
         }
         # add the very last property using the $value, or update it if it already exists
         $propName = ($Properties | Select-Object -Last 1)
-        if (!($obj | Get-Member -MemberType NoteProperty -Name $propName)) {
-            $obj | Add-Member NoteProperty -Name $propName -Value $Value
-            if ($hasChanged) {
-                $hasChanged.Value = $true
+        $propertyIsArray = [bool]($ArrayProperty -and $ArrayProperty -ieq $propName)
+        $ParentIsArray = [bool]($ArrayProperty -and $ArrayProperty -ieq $Properties[-2])
+
+        if ($propertyIsArray) {
+            if ($IsNew.IsPresent) {
+                $tmpObj = New-Object System.Collections.ArrayList
+                $tmpObj.Add($Value) | Out-Null
+
+                if (!($obj | Get-Member -MemberType NoteProperty -Name $propName)) {
+                    $obj | Add-Member NoteProperty -Name $propName -Value $tmpObj
+                }
+            } else {
+                $obj.$propName.Add($Value) | Out-Null
+            }
+        } elseif ($ParentIsArray) {
+            if ($IsNew.IsPresent) {
+                $tmpObj = (New-Object PSCustomObject)
+                $obj.Add($tmpObj) | Out-Null
+            } else {
+                $tmpObj = $obj | Select-Object -Last 1
+            }
+            if (!($tmpObj | Get-Member -MemberType NoteProperty -Name $propName)) {
+                $tmpObj | Add-Member NoteProperty -Name $propName -Value $Value
             }
         } else {
-            if ($hasChanged) {
-                $hasChanged.Value = $hasChanged.Value -bor ($obj."$propName" -ine $value)
+            if (!($obj | Get-Member -MemberType NoteProperty -Name $propName)) {
+                $obj | Add-Member NoteProperty -Name $propName -Value $Value
+            } else {
+                $obj."$propName" = $value
             }
-            $obj."$propName" = $value
+        }
+    }
+    end {
+        if ($hasChanged -and !$hasChanged.Value) {
+            $hasChanged.Value = [bool]($InputObjectClone -ine $InputObject | ConvertTo-Json -Compress)
         }
     }
 }
