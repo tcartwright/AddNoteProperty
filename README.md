@@ -6,6 +6,8 @@ This function will allow you to create very complex PSCustomObject's easily.
 
   - It can 
   	- Add or edit complex custom properties to objects
+  	  - If the property or pbject structure is missing, it will add it  
+  	  - If the property and structure preexists, then it will edit it
   	- Add complex arrays with sub objects to those arrays
   	- Add simple arrays of value types
   - It can not:
