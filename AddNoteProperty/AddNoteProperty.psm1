@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-	This function will allow you to create very complex PSCustomObject's easily.
+	This function will allow you to create very complex PSCustomObject''s easily.
 
 .PARAMETER InputObject
 	The base object to add the properties or property to.
